@@ -9,9 +9,9 @@
 
 /**
  *@brief 创建一个Socket，并与指定服务器的指定端口建立一个TCP连接
- *@param server char* 要连接的服务器地址，可以使用IP地址，也可以使用域名
- *@param port char* 服务器端口号。
- *@return socket描述符，失败则返回-1
+ *@param char* server 要连接的服务器地址，可以使用IP地址，也可以使用域名
+ *@param char* port 服务器端口号。
+ *@return int socket描述符，失败则返回-1
 */
 int create_connection(const char *server, const char *port)
 {
@@ -60,11 +60,21 @@ int create_connection(const char *server, const char *port)
 
 /**
  *@brief 向指定的TCP端口发送消息
- *@param 
- *@param
- *@return
+ *@param int sockfd 要发送数据的socket
+ *@param const char* message 待发送数据缓冲
+ *@param int msg_size 数据缓冲长度
+ *@return  
  */
-int send_message(int sockfd, char *message, int msg_size)
+int send_message(int sockfd, const char *message, int msg_size)
 {
-  
+  int send_size;
+  send_size = send(sockfd, message, msg_size, 0);
+  if (send_size != msg_size)
+	{
+#ifdef DEBUG
+	  fprintf(stderr, "send() failed");
+#endif
+	  return -1;
+	}
+  return send_size;
 }
