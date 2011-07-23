@@ -1,0 +1,7 @@
+;; Object gateway
+;; EDE project file.
+(ede-proj-project "gateway"
+  :name "gateway"
+  :file "Project.ede"
+  :targets 'nil
+  )

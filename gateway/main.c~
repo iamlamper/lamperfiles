@@ -1,0 +1,10 @@
+#include <stdio.h>
+
+#include "define.h"
+
+
+int main(int argc, char **argv)
+{
+	int fd;
+	fd= open("/root/gateway/testfile", O_RDONLY);
+}
