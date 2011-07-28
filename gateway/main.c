@@ -8,7 +8,7 @@
 int main(int argc, char **argv)
 {
 	int conn;
-	char *message = "HTTP 1/1.1\n";
+	char *message = "GET / HTTP /1.1\r\n\r\n";
 	char buf[SOCK_RX_BUF_SZ];
 
 	memset(buf, 0, SOCK_RX_BUF_SZ);

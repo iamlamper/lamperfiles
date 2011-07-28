@@ -56,27 +56,27 @@ SkinType=default
 # Hot key of Triggering Input Method
 TriggerKey=CTRL_SPACE
 # Hotkey of Switching Chinese and English Mode
-ChnEngSwitchKey=SHIFT  #L_CTRL
+ChnEngSwitchKey=L_CTRL
 # Double click Switch Key to Change Mode
 DoubleSwitchKey=False
 # Interval of Two Key Input
 TimeInterval=250
 # Hotkey of Switching Follow Cursor Mode
-FollowCursorKey= #CTRL_K
+FollowCursorKey=
 # Hotkey of Hiding Main Window
-HideMainWindowKey= #CTRL_ALT_H
+HideMainWindowKey=
 # Hotkey of Switching Virtual Keyboard
-VKSwitchKey= #CTRL_ALT_K
+VKSwitchKey=
 # Hotkey of Switching Traditional Chinese Input Mode On.
-TraditionalChnSwitchKey= #CTRL_ALT_F
+TraditionalChnSwitchKey=
 # Hotkey of Switching Legend Mode
-LegendSwitchKey=#CTRL_L
+LegendSwitchKey=
 # Hotkey of Looking up the Corresponding pinyin of Word.
-LookupPinyinKey=#CTRL_ALT_E
+LookupPinyinKey=
 # Hotkey of Switching Full Width Character Mode
 FullWidthSwitchKey=SHIFT_SPACE
 # Hotkey of Switch Chinese Punc Mode
-ChnPuncSwitchKey=#ALT_SPACE
+ChnPuncSwitchKey=
 # Hotkey of Going Prev Page
 PrevPageKey=-
 # Hotkey of Going Next Page
@@ -84,7 +84,7 @@ NextPageKey==
 # Hotkey to Choose Second and Third Candidate Word
 SecondThirdCandWordKey=#SHIFT
 # Hotkey of Saving All Config and Input History
-SaveAllKey=#CTRL_ALT_S
+SaveAllKey=
 # Hotkey of Switching Recording Mode
 SetRecordingKey=#CTRL_ALT_J
 # Hotkey of Reseting Recording Mode
