@@ -50,7 +50,7 @@ ShowVersion=True
 # Show Hint Window while ENV is not correctly configured.
 ShowHintWindow=False
 # Skin Name in use
-SkinType=default
+SkinType=classic
 
 [Hotkey]
 # Hot key of Triggering Input Method

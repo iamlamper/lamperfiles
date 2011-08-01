@@ -1,11 +1,15 @@
+
 #include <stdio.h>
-#include <stdlib.h>
-#include <fcntl.h>
-#include <unistd.h>
 #include <termios.h>
-#include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <stdlib.h>
 #include <errno.h>
-#include "tty.h"
+#include <unistd.h>
+#include <string.h>
+
+#define DEBUG
 
 int tty_speed_arr[] = { B38400, B19200, B9600, B4800, B2400, B1200, B300,
           B38400, B19200, B9600, B4800, B2400, B1200, B300, };
@@ -13,51 +17,47 @@ int tty_name_arr[] = {38400,  19200,  9600,  4800,  2400,  1200,  300, 38400,
           19200,  9600, 4800, 2400, 1200,  300, };
 
 /**
- *@brief 打开并设置一个串口,串口设置为RAW模式,其他串口参数设置均按默认
+ *@brief 打开并设置一个串口
  *@param int tty_num 串口号，第一个串口为0, 第二个为1,依此类推
+ *@param int i_rate input 波特率 (man termios.h)
+ *@param int o_rate output 波特率 
  *@return int 成功返回文件描述符，失败返回-1
  */
-int open_tty(int tty_num)
+int open_tty(int tty_num, int i_rate, int o_rate)
 {
   char tty_name[11];			/* /dev/ttyS[0,1,2,....] */
   int tty_fd;
-  struct termios ts;
+  
   sprintf((char *)tty_name, "/dev/ttyS%d", tty_num);
   tty_fd = open(tty_name, O_RDWR);
   if (tty_fd == -1)
 	{
-	  fprintf(stderr, "open tty error, errno:%d", errno);
+#ifdef DEBUG
+	fprintf(stderr, "open tty error, errno:%d", errno);
+#endif
+	return -1;
+	}
+  if (set_tty(tty_fd, i_rate, o_rate, 8, 1, 'N') == -1)
+	{
+#ifdef DEBUG
+	  fprintf(stderr, "set tty error, errno:%d", errno);
+#endif
 	  return -1;
 	}
-  if (tcgetattr(tty_fd, &ts) == 0)
-	{
-	  cfmakeraw(&ts);
-	  if (tcsetattr(tty_fd, TCSANOW, &ts) == -1)
-		{
-		  fprintf(stderr, "tcsetattr error, errno:%d", errno);
-		  return -1;
-		}
-	}
-  else 
-	{
-	  fprintf(stderr, "tcgetattr error, errno:%d", errno);
-	  return -1;
-	}
-  
   return tty_fd;
 }
 
 
 
 /**
- *@brief 修改串口的波特率、奇偶检验等参数
+ *@brief 设置串口的波特率、检验方式等
  *@param int fd 打开的串口的文件描述符
  *@param int i_rate 波特率 (man termios.h)
  *@param int o_rate 波特率
  *@param int databits 数据位 取值7或8
  *@param int stopbits 停止位 取值为1或2
  *@param int parity 检验类型 N，E，O，S
- *@return   
+ *@return 0 success -1 failed  
  */
 int set_tty(int fd, int i_rate, int o_rate, int databits, int stopbits, int parity)
 {
@@ -66,7 +66,9 @@ int set_tty(int fd, int i_rate, int o_rate, int databits, int stopbits, int pari
 
   if (tcgetattr(fd, &tty_opt) != 0)
 	{
+#ifdef DEBUG
 	  fprintf(stderr, "tcgetarr error, errno:%d", errno);
+#endif
 	  return -1;
 	}
 
@@ -155,4 +157,44 @@ int set_tty(int fd, int i_rate, int o_rate, int databits, int stopbits, int pari
 	}
   return 0;						/* success */
 }   
-    
+
+
+int main()
+{
+  int tty_fd;
+  char buf[512];
+  const int rate = 9600;
+  short i;
+  short nread;
+  struct  termios ts;
+
+  /*  tty_fd = open_tty(0, rate, rate);*/
+  tty_fd = open("/dev/ttyS0", O_RDONLY); /* test */
+  if (tty_fd == -1 )
+	{
+	  fprintf(stderr, "open_tty errorno: %d", errno);
+	  exit(-1);
+	}
+   bzero(buf, sizeof(buf));
+  /* set */
+  tcgetattr(tty_fd, &ts);
+  cfmakeraw(&ts);
+  tcsetattr(tty_fd, TCSANOW, &ts);
+  /* read */
+  while ((nread = read(tty_fd, buf, 512)) > 0)
+	{
+	  /*	  buf[nread] = '\0';*/
+	  /*	  printf("%s--- %d bytes read --size %d", buf, nread, strlen(buf));*/
+	  printf("n=%d,len=%d ", nread, strlen(buf));
+	  for (i=0; i< 10; i++)
+		{
+		  fprintf(stdout, "%d:%c, ", buf[i], buf[i]);
+		}
+	  printf("--end---\n");
+	  fflush(stdout);
+	  bzero(buf, sizeof(buf));
+	}
+  fprintf(stdout, "end", strlen("end"));
+  close(tty_fd);
+}
+  

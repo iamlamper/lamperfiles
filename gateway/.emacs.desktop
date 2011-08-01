@@ -1,0 +1,161 @@
+;; -*- mode: emacs-lisp; coding: emacs-mule; -*-
+;; --------------------------------------------------------------------------
+;; Desktop File for Emacs
+;; --------------------------------------------------------------------------
+;; Created Mon Aug  1 21:14:46 2011
+;; Desktop file format version 206
+;; Emacs version 23.3.1
+
+;; Global section:
+(setq desktop-missing-file-warning nil)
+(setq tags-file-name nil)
+(setq tags-table-list nil)
+(setq search-ring '("#e" "#ifd" "sigaction_ha" "signal_handler(" "signal(" "signal" "rt_" "rt_co" "return " "fork"))
+(setq regexp-search-ring nil)
+(setq register-alist nil)
+(setq file-name-history '("~/work/gateway/" "/usr/include/asm-generic/errno-base.h" "~/work/gateway/tty.c" "~/work/gateway/net.h" "~/work/gateway/net.c" "~/work/gateway/" "/home/gentoo/work/test/test.c" "~/work/test.c" "/usr/include/signal.h" "~/lighttpd-1.4.28/src/server.c" "~/lighttpd-1.4.28/src/fdevent_poll.c" "~/lighttpd-1.4.28/src/connections.c" "~/lighttpd-1.4.28/src/base.h" "~/work/gateway/define.h" "~/lighttpd-1.4.28/src/server.c" "~/work/gateway/tty.c" "~/work/gateway/tty.h" "~/work/gateway/main.c" "~/work/ttyrw/read.c" "~/work/gateway/" "/su:" "~/.emacs"))
+
+;; Buffer section -- buffers listed in same order as in buffer list:
+(desktop-create-buffer 206
+  "/home/gentoo/work/gateway/main.c"
+  "main.c"
+  'c-mode
+  '(abbrev-mode)
+  4419
+  '(4587 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . utf-8-unix)))
+
+(desktop-create-buffer 206
+  "/home/gentoo/work/gateway/tty.c"
+  "tty.c"
+  'c-mode
+  '(abbrev-mode)
+  1119
+  '(1014 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . utf-8-unix)))
+
+(desktop-create-buffer 206
+  "/home/gentoo/work/gateway/net.h"
+  "net.h"
+  'c-mode
+  '(abbrev-mode)
+  244
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/home/gentoo/work/gateway/net.c"
+  "net.c"
+  'c-mode
+  '(abbrev-mode)
+  2371
+  '(2406 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . utf-8-unix)))
+
+(desktop-create-buffer 206
+  nil
+  "gateway"
+  'dired-mode
+  nil
+  451
+  '(nil nil)
+  t
+  '("/home/gentoo/work/gateway/")
+  nil)
+
+(desktop-create-buffer 206
+  "/home/gentoo/lighttpd-1.4.28/src/server.c"
+  "server.c"
+  'c-mode
+  '(abbrev-mode)
+  2417
+  '(2826 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/home/gentoo/lighttpd-1.4.28/src/fdevent_poll.c"
+  "fdevent_poll.c"
+  'c-mode
+  '(abbrev-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/home/gentoo/lighttpd-1.4.28/src/connections.c"
+  "connections.c"
+  'c-mode
+  '(abbrev-mode)
+  7581
+  '(1 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/home/gentoo/lighttpd-1.4.28/src/base.h"
+  "base.h"
+  'c-mode
+  '(abbrev-mode)
+  6714
+  '(1 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/home/gentoo/work/gateway/define.h"
+  "define.h"
+  'c-mode
+  '(abbrev-mode)
+  250
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/home/gentoo/work/gateway/tty.h"
+  "tty.h"
+  'c-mode
+  '(abbrev-mode)
+  117
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/home/gentoo/work/ttyrw/read.c"
+  "read.c"
+  'c-mode
+  '(abbrev-mode)
+  3733
+  '(3654 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . utf-8-unix)))
+
+(desktop-create-buffer 206
+  "/home/gentoo/.emacs"
+  ".emacs"
+  'emacs-lisp-mode
+  nil
+  776
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
