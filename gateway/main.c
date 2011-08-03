@@ -23,7 +23,7 @@ sig_atomic_t time_up = 0;		/* whether the time interval use up */
 
 
 /**
- *@breif
+ *@brief
  *@return
  */
 int main(int argc, char **argv)
@@ -35,9 +35,12 @@ int main(int argc, char **argv)
   msg_t *msg = NULL;
   int nread = -1;
   int rt_code = 0;				/* default, successfully return */
+  int buf_end = 0;
+
+  struct msqid_ds mds;/* test */
 
   /* create a message queue */
-  msgq_id = msgget(IPC_PRIVATE, IPC_CREAT); 
+  msgq_id = msgget(IPC_PRIVATE, IPC_CREAT|IPC_EXCL); 
   if (msgq_id == -1)
 	{
 	  fprintf(stderr, "msgget error, errno:%d ", errno);
@@ -79,40 +82,57 @@ int main(int argc, char **argv)
 	  goto QUIT;
 	}
 
+  /* parent, main loop */
   while (1)
 	{
+	CONTINUE:
 	  bzero(&(msg->mtext), sizeof(msg->mtext));
-	  bzero(buf, sizeof(buf));
+	  bzero(buf, TTY_RX_BUF_SZ); /* DONT use sizeof(buf) !!! */
 	  msg->mtype = 1;			/* not used, currently*/
 
-	  nread = read(tty_fd, buf, sizeof(buf));
-	  switch (nread)
+	  buf_end  = 0;
+	  while (buf_end < TTY_RX_BUF_SZ - 1)
 		{
-		case -1:
-		  fprintf(stderr,"read error, errno:%d", errno);
-		  rt_code = -1;
-		  goto QUIT;
-		  break;
-		case 0:
-		  continue;
-		  break;
-		default :
-		  memcpy(&(msg->mtext), buf, sizeof(msg->mtext)); /* DON'T use strlen(buf) */
-		  break;
+		  /* 1 byte each time, low effiency, but reliable */
+		  nread = read(tty_fd, &buf[buf_end], 1); 
+		  if (nread == -1)
+			{
+			  fprintf(stderr, "read error,errno:%d", errno);
+			  goto CONTINUE;	/* error occurs */
+			}
+		  else
+			{
+			  buf_end ++;
+			}
 		}
+	  buf[buf_end] = '\0';
+	  /* validate(buf); */ /* test  */
 
+	  memcpy(&(msg->mtext), buf, sizeof(msg->mtext)); /* DON'T use strlen(buf) */
+
+	  /* test */
+	  printf("\n ^^^^ %s %d %d ^^^^^^ \n", buf, sizeof(msg->mtext), strlen(buf));
+	  /* test */
 	  /* put into msg queue */
 	  if (msgsnd(msgq_id, msg, strlen(msg->mtext), 0) == -1)
 		{
 		  fprintf(stderr, "msgsnd error, errno:%d", errno);
 		  rt_code = -1;
 		  goto QUIT;
-		} 
+		}
+	  /* test 
+	  printf("\n------parent-----\n");
+	  msgctl(msgq_id, IPC_STAT, &mds);
+	  printf("pid of last msgsnd is %d\n", mds.msg_lspid);
+	  printf("pid of last msgrcv is %d\n", mds.msg_lrpid);
+	  printf("number of messages in queue is %d\n", mds.msg_qnum);
+	  printf("\n------END--------\n");
+	   test */
 	}
  QUIT:
-  if (buf == NULL)
+  if (buf != NULL)
 	free(buf);
-  if (msg == NULL)
+  if (msg != NULL)
 	free(msg);
   return rt_code;
 }
@@ -167,14 +187,14 @@ int run_child(int msgq_id)
   bzero(&sock_buf, sizeof(sock_buf));
   while (1)
 	{
-	  /* time cycle begin */
+	  /* time cycle starts */
 	  if (buf_end == 0)
 		{
 		  snprintf(sock_buf, 2, "["); /* [.....  */
 		  buf_end ++;
 		}
 
-	  /* time cycle end, send msg */
+	  /* time cycle ends, send msg */
 	  if (time_up == 1)
 		{
 		  snprintf(&sock_buf[buf_end], 2, "]"); /* should have:buf_end <= BufferSize-2 */
@@ -187,6 +207,10 @@ int run_child(int msgq_id)
 			  time_up = 0;
 			  continue;
 			}
+
+		  /* test */
+		  printf("%s", http_buf);
+		  /* test */
 
 		  /* http request */
 		  if (http_req(sock_fd, http_buf, strlen(http_buf)) == -1)
@@ -221,11 +245,27 @@ int run_child(int msgq_id)
 	  /* read msg */
 	  if (msgrcv(msgq_id, &msg, sizeof(msg), 0, 0) == -1)
 		{
-		  fprintf(stderr, "msgrcv error, errno:%d", errno);
-		  rt_code = -1;
-		  goto QUIT;
+		  if ( errno != EINTR )	/* actually not an error */
+			{
+			  fprintf(stderr, "msgrcv error, errno:%d", errno);
+			  rt_code = -1;
+			}
+		  /* goto QUIT; */
+		  continue;				/* don't quit */
 		}
-	  if (buf_end + strlen(msg.mtext) + 3 <= sizeof(sock_buf) - 1) /* 本来是<=size-2,但是因为第一组值前可以少一个逗号号，所以多出一个空间 */
+
+	  /* test 
+	  struct msqid_ds mds;
+	  printf("\n------child----\n");
+	  msgctl(msgq_id, IPC_STAT, &mds);
+	  printf("pid of last msgsnd is %d\n", mds.msg_lspid);
+	  printf("pid of last msgrcv is %d\n", mds.msg_lrpid);
+	  printf("number of messages in queue is %d\n", mds.msg_qnum);
+	  printf("max # of bytes on queue is %d\n", mds.msg_qbytes);
+	  printf("\n------END--------\n");
+	  test */
+
+	  if (buf_end + strlen(msg.mtext) + 3 <= sizeof(sock_buf) - 1) /* 本来是<=size-2,但是因为第一组值前可以少一个逗号，所以多出一个空间 */
 		{
 		  if (buf_end != 1)
 			{

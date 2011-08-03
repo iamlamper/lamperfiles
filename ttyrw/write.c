@@ -11,9 +11,9 @@
 #define DEBUG
 
 int tty_speed_arr[] = { B38400, B19200, B9600, B4800, B2400, B1200, B300,
-          B38400, B19200, B9600, B4800, B2400, B1200, B300, };
+						B38400, B19200, B9600, B4800, B2400, B1200, B300, };
 int tty_name_arr[] = {38400,  19200,  9600,  4800,  2400,  1200,  300, 38400,  
-          19200,  9600, 4800, 2400, 1200,  300, };
+					  19200,  9600, 4800, 2400, 1200,  300, };
 
 /**
  *@brief 打开并设置一个串口
@@ -32,9 +32,9 @@ int open_tty(int tty_num, int i_rate, int o_rate)
   if (tty_fd == -1)
 	{
 #ifdef DEBUG
-	fprintf(stderr, "open tty error, errno:%d", errno);
+	  fprintf(stderr, "open tty error, errno:%d", errno);
 #endif
-	return -1;
+	  return -1;
 	}
   if (set_tty(tty_fd, i_rate, o_rate, 8, 1, 'N') == -1)
 	{
@@ -134,18 +134,18 @@ int set_tty(int fd, int i_rate, int o_rate, int databits, int stopbits, int pari
 		}
 	  if (o_rate == tty_name_arr[i])
 		{
-		if (cfsetospeed(&tty_opt, tty_speed_arr[i]) == -1)
-		  {
-			fprintf(stderr, "cfsetospeed error, errno:%d", errno);
-			return -1;
-		  }
+		  if (cfsetospeed(&tty_opt, tty_speed_arr[i]) == -1)
+			{
+			  fprintf(stderr, "cfsetospeed error, errno:%d", errno);
+			  return -1;
+			}
 		}
 	}
 
-	if (parity != 'n' && parity != 'N')
-	  {
-		tty_opt.c_iflag != INPCK;
-		tcflush(fd, TCIFLUSH);
+  if (parity != 'n' && parity != 'N')
+	{
+	  tty_opt.c_iflag != INPCK;
+	  tcflush(fd, TCIFLUSH);
 	  tty_opt.c_cc[VTIME] = 150; /* set time delay 15 seconds */
 	  tty_opt.c_cc[VMIN] = 0;
 	  if (tcsetattr(fd, TCSANOW, &tty_opt) != 0)
@@ -172,17 +172,28 @@ int main()
 	  exit(-1);
 	}
 
+
+  while (gets(buf))
+	{
+	  i = write(tty_fd, buf, strlen(buf));
+	  if (i == -1)
+		{
+		  fprintf(stderr, "error write, errno%d", errno);
+		  continue;
+		}
+	}
   for (i=0; i<3; i++)
 	{
 	  /*	  getchar();*/
-	 /* tcdrain(tty_fd);*/				/* test */
-	  sprintf(buf, "%d", i);
-	  sleep(1);  /*test */ 
-	  if (write(tty_fd, buf, strlen(buf)) == -1)
+	  /* tcdrain(tty_fd);*/				/* test */
+	  /*
+		sprintf(buf, "%d", i);
+		if (write(tty_fd, buf, strlen(buf)) == -1)
 		{
-		  fprintf(stderr, "error write, errno:%d", errno);
-		  exit(-1);
+		fprintf(stderr, "error write, errno:%d", errno);
+		exit(-1);
 		}
+	  */
 	}
   
   /*write(tty_fd, "end", strlen("end"));*/

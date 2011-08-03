@@ -37,6 +37,15 @@ int open_tty(int tty_num)
 		  fprintf(stderr, "tcsetattr error, errno:%d", errno);
 		  return -1;
 		}
+
+	  /* test 
+	  printf("\ndefault vmin %d, default vtime %d\n", ts.c_cc[VMIN], ts.c_cc[VTIME]);
+	  ts.c_cc[VMIN] = 8;
+	  ts.c_cc[VTIME] = 100;
+	  tcsetattr(tty_fd, TCSANOW, &ts);
+	  tcgetattr(tty_fd, &ts);
+	  printf("\nNew default vmin %d, default vtime %d\n", ts.c_cc[VMIN], ts.c_cc[VTIME]);
+	  test */
 	}
   else 
 	{
@@ -46,8 +55,6 @@ int open_tty(int tty_num)
   
   return tty_fd;
 }
-
-
 
 /**
  *@brief 修改串口的波特率、奇偶检验等参数
