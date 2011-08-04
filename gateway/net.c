@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <sys/socket.h>
 #include <netdb.h>
@@ -14,7 +13,7 @@
  *@param char* server 要连接的服务器地址，可以使用IP地址，也可以使用域名
  *@param char* port 服务器端口号。
  *@return int socket描述符，失败则返回-1
-*/
+ */
 int create_connection(const char *server, const char *port)
 {
   int sfd;
@@ -81,7 +80,6 @@ int http_req(int sockfd, const char *message, int msg_size)
   return send_size;
 }
 
-
 /**
  *@brief 构造HTTP请求报文
  *@param char *http_buf 待发送消息的缓冲
@@ -91,22 +89,23 @@ int http_req(int sockfd, const char *message, int msg_size)
  *@param char *url 请求地址
  *@param char *host 主机地址
  *@return 成功则返回http 报文头的长度，失败返回-1
-  */
+ */
 int pack_msg(char *http_buf, int http_buf_len, const char *data_buf, int data_buf_len, const char *url, const char *host)
 {
-  char method[] = "GET";
+  char method[] = "POST";
   char edition[] = "HTTP/1.1";
   int len = -1;
 
   bzero(http_buf, http_buf_len);
-  len =snprintf(http_buf, http_buf_len, "%s %s %s\r\nHost:%s\r\n\r\nrecord=%s",
-		   method, url, edition, host, data_buf);
+  len =snprintf(http_buf, http_buf_len, "%s %s %s\r\nHost:%s\r\nContent-Type: application/x-www-form-urlencoded\r\nConnection: Close\r\nContent-Length:%d\r\n\r\nrecord=%s", method, url, edition, host, data_buf_len+7, data_buf);
+
+
   if (len == -1)
 	{
-	  fprintf(stderr, "snprintf@pack_msg error");
+	  fprintf(stderr, "snprintf@pack_msg() error");
 	  return -1;
 	}
-  return strlen(http_buf);
+  return strlen(http_buf); 
 }
 
 /**
@@ -119,9 +118,12 @@ int wait_resp(int sock_fd, char *buf, int buf_len)
 {
   int nread = -1;
   /* ....... */
-  /*
-  while ()
+  /* test */
+  while (( nread = read(sock_fd, buf, 1024)) > 0)
 	{
+	  buf[nread] = '\0';
+	  printf("%s", buf);
 	}
-  */
+  printf("\n---------------------------\n");
+  /* test */
 }

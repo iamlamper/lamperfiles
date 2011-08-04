@@ -91,7 +91,7 @@ int main(int argc, char **argv)
 	  msg->mtype = 1;			/* not used, currently*/
 
 	  buf_end  = 0;
-	  while (buf_end < TTY_RX_BUF_SZ - 1)
+	  while (buf_end < TTY_RX_BUF_SZ -1) /* .....\0 */
 		{
 		  /* 1 byte each time, low effiency, but reliable */
 		  nread = read(tty_fd, &buf[buf_end], 1); 
@@ -106,6 +106,7 @@ int main(int argc, char **argv)
 			}
 		}
 	  buf[buf_end] = '\0';
+
 	  /* validate(buf); */ /* test  */
 
 	  memcpy(&(msg->mtext), buf, sizeof(msg->mtext)); /* DON'T use strlen(buf) */
@@ -162,9 +163,10 @@ int run_child(int msgq_id)
   int sock_fd = -1;				/* socket fd */
   struct itimerval itv;
   char http_buf[512 + SOCK_TX_BUF_SZ];
-  char url[1024];				/* 1K should be enough for us */
-  char host[1024];
+  char url[1024] = "/acmeter/?s=record"; /* 1K should be enough for us */
+  char host[1024] = "192.168.1.136";
 
+  
   /* set timer */
   interval = 6;					/* 6 seconds, by default */
   if (signal(SIGALRM, _alrm_hdlr) == SIG_ERR)
@@ -190,7 +192,7 @@ int run_child(int msgq_id)
 	  /* time cycle starts */
 	  if (buf_end == 0)
 		{
-		  snprintf(sock_buf, 2, "["); /* [.....  */
+		  snprintf(sock_buf, 2, "["); /* {.....  */
 		  buf_end ++;
 		}
 
@@ -199,7 +201,7 @@ int run_child(int msgq_id)
 		{
 		  snprintf(&sock_buf[buf_end], 2, "]"); /* should have:buf_end <= BufferSize-2 */
 		  /* pack http msg */
-		  if (pack_msg(http_buf, sizeof(http_buf), sock_buf, sizeof(sock_buf), url, host) == -1)
+		  if (pack_msg(http_buf, sizeof(http_buf), sock_buf, strlen(sock_buf), url, host) == -1)
 			{
 			  /* print or log errors, but don't quit!!! */
 			  fprintf(stderr, "pack_msg error\n");
@@ -211,7 +213,15 @@ int run_child(int msgq_id)
 		  /* test */
 		  printf("%s", http_buf);
 		  /* test */
-
+		  
+		  /* create connection to http server */
+		  sock_fd = create_connection(host, "80");
+		  if (sock_fd == -1)
+			{
+			  fprintf(stderr, "create connection error");
+			  continue;			/* log error, break this cycle */
+			}
+		  
 		  /* http request */
 		  if (http_req(sock_fd, http_buf, strlen(http_buf)) == -1)
 			{
@@ -239,6 +249,15 @@ int run_child(int msgq_id)
 				  /* if not successful, log it.*/
 				}
 			}
+
+		  /* clean up */
+		  if (sock_fd > 0)
+			{
+			  close(sock_fd);
+			  buf_end = 0;
+			  time_up = 0;
+			  continue;
+			}
 		}
 
 	  bzero(&msg, sizeof(msg));
@@ -265,6 +284,7 @@ int run_child(int msgq_id)
 	  printf("\n------END--------\n");
 	  test */
 
+	  /* prepare message */
 	  if (buf_end + strlen(msg.mtext) + 3 <= sizeof(sock_buf) - 1) /* 本来是<=size-2,但是因为第一组值前可以少一个逗号，所以多出一个空间 */
 		{
 		  if (buf_end != 1)
